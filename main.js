@@ -1,30 +1,31 @@
-const fs = require('fs');
+const fs = require('fs').promises;
+const path = require('path');
 
+async function readAndModifyFile(filePath) {
+    try {
+        // Read the file asynchronously
+        const fileContents = await fs.readFile(filePath, 'utf-8');
+
+        // Convert to uppercase and reverse
+        const modifiedText = fileContents.toUpperCase().split('').reverse().join('');
+
+        // Print the modified text
+        console.log('Modified text:');
+        console.log(modifiedText);
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            console.error(`Error: File not found at path '${filePath}'`);
+        } else {
+            console.error('An error occurred while reading the file:', error.message);
+        }
+    }
+}
+
+// Accept the file path as a command-line argument
 const filePath = process.argv[2];
 
-function readFileAsync(filePath) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        reject(`Error reading file ${filePath}: ${err}`);
-        return;
-      }
-      resolve(data);
-    });
-  });
+if (!filePath) {
+    console.error('Usage: node app.js <file-path>');
+} else {
+    readAndModifyFile(filePath);
 }
-
-function modifyText(text) {
-  return new Promise((resolve, reject) => {
-    // TODO: Convert text to uppercase and reverse it
-  });
-}
-
-readFileAsync(filePath)
-  .then((data) => modifyText(data))
-  .then((modifiedText) => {
-    console.log(modifiedText);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
